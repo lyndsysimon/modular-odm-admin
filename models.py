@@ -24,19 +24,19 @@ import logging
 
 logging.basicConfig(level=logging.DEBUG)
 
-# import os
-# try:os.remove('db_blog.pkl')
-# except:pass
-# try:os.remove('db_tag.pkl')
-# except:pass
+import os
+try:os.remove('db_blog.pkl')
+except:pass
+try:os.remove('db_tag.pkl')
+except:pass
 
 class Tag(StoredObject):
     value = StringField(primary=True)
     count = StringField(default='c', validate=True)
     misc = StringField()
     misc2 = StringField()
-    created = DateTimeField(validate=True)
-    modified = DateTimeField(validate=True, auto_now=True)
+    # created = DateTimeField(validate=True)
+    # modified = DateTimeField(validate=True, auto_now=True)
     keywords = StringField(default=['keywd1', 'keywd2'], validate=[MinLengthValidator(5), MaxLengthValidator(10)], list=True)
     mybool = BooleanField(default=False)
     myint = IntegerField()
@@ -58,8 +58,17 @@ class Blog(StoredObject):
 Tag.set_storage(PickleStorage('tag'))
 Blog.set_storage(PickleStorage('blog'))
 
-b = Blog(body="Hello world!")
+t = Tag(value="tester")
+t.save()
+
+l = Tag(value="next")
+l.save()
+
+b = Blog(body="Hello world!", tag=t)
 b.save()
 
-b2 = Blog(body="Goodbye world")
-b2.save()
+# b2 = Blog(body="Goodbye world")
+# b2.save()
+
+
+
