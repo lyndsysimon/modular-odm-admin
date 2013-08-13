@@ -21,54 +21,82 @@ pp = pprint.PrettyPrinter(indent=4)
 
 import random
 import logging
+debug = True
 
 logging.basicConfig(level=logging.DEBUG)
+if debug:
+    import os
+    try:os.remove('db_team.pkl')
+    except:pass
+    try:os.remove('db_manager.pkl')
+    except:pass
+    try:os.remove('db_player.pkl')
+    except:pass
 
-import os
-try:os.remove('db_blog.pkl')
-except:pass
-try:os.remove('db_tag.pkl')
-except:pass
+class Team(StoredObject):
+    name = StringField(primary=True)
+    owner = ForeignField('Manager', backref='owned')
+    wins = IntegerField(list=True)
+    playoffs = BooleanField(default=None, list=True)
+    schedule = StringField(list=True)
+    players = ForeignField('Player', list=True, backref='plays_for')
 
-class Tag(StoredObject):
-    value = StringField(primary=True)
-    count = StringField(default='c', validate=True)
-    misc = StringField()
-    misc2 = StringField()
-    # created = DateTimeField(validate=True)
-    # modified = DateTimeField(validate=True, auto_now=True)
-    keywords = StringField(default=['keywd1', 'keywd2'], validate=[MinLengthValidator(5), MaxLengthValidator(10)], list=True)
-    mybool = BooleanField(default=False)
-    myint = IntegerField()
-    myfloat = FloatField()
+class Manager(StoredObject):
+    name = StringField(primary=True)
+    players_managed = ForeignField('Player', list=True, backref='managed_by')
 
-class Blog(StoredObject):
-    _id = StringField(primary=True, optimistic=True)
-    body = StringField(default='blog body')
-    title = StringField(default='asdfasdfasdf', validate=MinLengthValidator(8))
-    tag = ForeignField('Tag', backref='tagged')
-    tags = ForeignField('Tag', list=True, backref='taggeds')
-    _meta = {'optimistic':True}
+class Player(StoredObject):
+    name = StringField(primary=True)
+    number = IntegerField()
+    rating = FloatField(default=0.0)
+    injured = BooleanField(default=False)
 
+Team.set_storage(PickleStorage('team'))
+Manager.set_storage(PickleStorage('manager'))
+Player.set_storage(PickleStorage('player'))
 
-# import pdb; pdb.set_trace()
+if debug:
+    d = Player(name="Griffin", number=10, rating=85.0, injured=True)
+    d.save()
 
-# Tag.set_storage(MongoStorage(db, 'tag'))
-# Blog.set_storage(MongoStorage(db, 'blog'))
-Tag.set_storage(PickleStorage('tag'))
-Blog.set_storage(PickleStorage('blog'))
+    e = Player(name="Morris", number=46, rating=80.2, injured=False)
+    e.save()
 
-t = Tag(value="tester")
-t.save()
+    f = Player(name="Moss", number=89, rating=82.7, injured=False)
+    f.save()
 
-l = Tag(value="next")
-l.save()
+    g = Player(name="Tannehill", number=17, rating=75.0, injured=False)
+    g.save()
 
-b = Blog(body="Hello world!", tag=t)
-b.save()
+    h = Player(name="Wallace", number=11, rating=80.0, injured=False)
+    h.save()
 
-# b2 = Blog(body="Goodbye world")
-# b2.save()
+    i = Player(name="Wake", number=91, rating=84.4, injured=False)
+    i.save()
 
+    j = Player(name="Cutler", number=6, rating=70.2, injured=False)
+    j.save()
 
+    k = Player(name="Marshall", number=15, rating=77.0, injured=False)
+    k.save()
 
+    l = Player(name="Collins", number=93, rating=72.4, injured=False)
+    l.save()
+
+    a = Manager(name="finsfan", players_managed=[d, g, h, i])
+    a.save()
+
+    b = Manager(name="skinsfan", players_managed=[d, e, f])
+    b.save()
+
+    c = Manager(name="bearsfan", players_managed=[j, k, l])
+    c.save()
+
+    m = Team(name="FinsRock", owner=a, wins=[3,1,2], playoffs=[True, False, True], schedule=["Home", "Away", "Away"], players=[d, g, h, i])
+    m.save()
+
+    n = Team(name="SkinsRock", owner=b, wins=[2,0,1], playoffs=[True, False, False], schedule=["Home", "Away", "Home"], players=[d, e, f])
+    n.save()
+
+    o = Team(name="BearsRock", owner=c, wins=[3,1,4], playoffs=[False, False, False], schedule=["Away", "Away", "Home"], players=[j, k, l])
+    o.save()
