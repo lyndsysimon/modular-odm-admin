@@ -5,15 +5,9 @@
 
 import pprint
 
+from modularodm import fields
 from modularodm import StoredObject
-from modularodm.fields.StringField import StringField
-from modularodm.fields.IntegerField import IntegerField
-from modularodm.fields.FloatField import FloatField
-from modularodm.fields.BooleanField import BooleanField
-from modularodm.fields.DateTimeField import DateTimeField
-from modularodm.fields.ForeignField import ForeignField
-from modularodm.storage.PickleStorage import PickleStorage
-from modularodm.storage.MongoStorage import MongoStorage
+from modularodm.storage.picklestorage import PickleStorage
 from modularodm.validators import *
 from modularodm.query.querydialect import DefaultQueryDialect as Q
 
@@ -26,30 +20,32 @@ debug = True
 logging.basicConfig(level=logging.DEBUG)
 if debug:
     import os
-    try:os.remove('db_team.pkl')
-    except:pass
-    try:os.remove('db_manager.pkl')
-    except:pass
-    try:os.remove('db_player.pkl')
-    except:pass
+    for f in ('team','manager','player'):
+        try:
+            os.remove('db_{}.pkl'.format(f))
+        except OSError:
+            pass
+
 
 class Team(StoredObject):
-    name = StringField(primary=True)
-    owner = ForeignField('Manager', backref='owned')
-    wins = IntegerField(list=True)
-    playoffs = BooleanField(default=None, list=True)
-    schedule = StringField(list=True)
-    players = ForeignField('Player', list=True, backref='plays_for')
+    name = fields.StringField(primary=True)
+    owner = fields.ForeignField('Manager', backref='owned')
+    wins = fields.IntegerField(list=True)
+    playoffs = fields.BooleanField(default=None, list=True)
+    schedule = fields.StringField(list=True)
+    players = fields.ForeignField('Player', list=True, backref='plays_for')
+
 
 class Manager(StoredObject):
-    name = StringField(primary=True)
-    players_managed = ForeignField('Player', list=True, backref='managed_by')
+    name = fields.StringField(primary=True)
+    players_managed = fields.ForeignField('Player', list=True, backref='managed_by')
+
 
 class Player(StoredObject):
-    name = StringField(primary=True)
-    number = IntegerField()
-    rating = FloatField(default=0.0)
-    injured = BooleanField(default=False)
+    name = fields.StringField(primary=True)
+    number = fields.IntegerField()
+    rating = fields.FloatField(default=0.0)
+    injured = fields.BooleanField(default=False)
 
 Team.set_storage(PickleStorage('team'))
 Manager.set_storage(PickleStorage('manager'))
@@ -92,11 +88,32 @@ if debug:
     c = Manager(name="bearsfan", players_managed=[j, k, l])
     c.save()
 
-    m = Team(name="FinsRock", owner=a, wins=[3,1,2], playoffs=[True, False, True], schedule=["Home", "Away", "Away"], players=[d, g, h, i])
+    m = Team(
+        name="FinsRock",
+        owner=a,
+        wins=[3, 1, 2],
+        playoffs=[True, False, True],
+        schedule=["Home", "Away", "Away"],
+        players=[d, g, h, i]
+    )
     m.save()
 
-    n = Team(name="SkinsRock", owner=b, wins=[2,0,1], playoffs=[True, False, False], schedule=["Home", "Away", "Home"], players=[d, e, f])
+    n = Team(
+        name="SkinsRock",
+        owner=b,
+        wins=[2, 0, 1],
+        playoffs=[True, False, False],
+        schedule=["Home", "Away", "Home"],
+        players=[d, e, f]
+    )
     n.save()
 
-    o = Team(name="BearsRock", owner=c, wins=[3,1,4], playoffs=[False, False, False], schedule=["Away", "Away", "Home"], players=[j, k, l])
+    o = Team(
+        name="BearsRock",
+        owner=c,
+        wins=[3, 1, 4],
+        playoffs=[False, False, False],
+        schedule=["Away", "Away", "Home"],
+        players=[j, k, l]
+    )
     o.save()

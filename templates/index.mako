@@ -6,6 +6,6 @@
 <h2>Center for Fantasy Football</h2>
 <p class="prettyprint">
    % for key, value in schemas.iteritems():
-    <a href="/${key}">${key}</a> ... ${type(value._storage[0]).__name__}</p>
+    <a href="/${key}">${key}</a> ... ${ value.__name__ }</p>
    % endfor
 ##    ${schemas}</p>

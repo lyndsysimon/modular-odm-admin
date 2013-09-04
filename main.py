@@ -33,7 +33,7 @@ def schema_display(schema_name):
     schema_obj = models.StoredObject._collections[schema_name]
     primary_name = schema_obj._primary_name
     schema_info = json.dumps(get_schema_keys(schema_name))
-    schema_entries = schema_obj.find_all()
+    schema_entries = schema_obj.find()
     entry_data = []
     for i in list(schema_entries):
         storage = i.to_storage()
