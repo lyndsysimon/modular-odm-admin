@@ -9,6 +9,7 @@
 <table class="table table-striped table-bordered">
     <% import json %>
     <thead>
+        <th>${ primary_key_field }</th>
     % for key in schema_entries[0]:
         <th>${key}</th>
     % endfor
@@ -16,9 +17,12 @@
     <tbody>
     % for i in schema_entries:
         <tr>
-        % for key, value in i.iteritems():
-            <td>${value}</td>
-        % endfor
+            <td>${i[primary_key_field]}</td>
+            % for key, value in i.iteritems():
+                % if value != primary_key_field:
+                    <td>${value}</td>
+                % endif
+            % endfor
         </tr>
     % endfor
     </tbody>

@@ -29,7 +29,7 @@ if debug:
 
 class Team(StoredObject):
     name = fields.StringField(primary=True)
-    owner = fields.ForeignField('Manager', backref='owned')
+    owner = fields.ForeignField('Manager', backref='owns')
     wins = fields.IntegerField(list=True)
     playoffs = fields.BooleanField(default=None, list=True)
     schedule = fields.StringField(list=True)
